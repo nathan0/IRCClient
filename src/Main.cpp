@@ -15,6 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <signal.h>
 #include <cstdlib>
@@ -22,7 +24,6 @@
 #include <algorithm>
 #include "Thread.h"
 #include "IRCClient.h"
-
 volatile bool running;
 
 void signalHandler(int signal)
@@ -123,6 +124,12 @@ void ctcpCommand(std::string arguments, IRCClient* client)
     client->SendIRC("PRIVMSG " + to + " :\001" + text + "\001");
 }
 
+void quitCommand(std::string quit, IRCClient* client)
+{
+    client->SendIRC("QUIT :" + quit);
+    exit(EXIT_SUCCESS);
+}
+
 ThreadReturn inputThread(void* client)
 {
     std::string command;
@@ -131,6 +138,7 @@ ThreadReturn inputThread(void* client)
     commandHandler.AddCommand("join", 1, &joinCommand);
     commandHandler.AddCommand("part", 1, &partCommand);
     commandHandler.AddCommand("ctcp", 2, &ctcpCommand);
+    commandHandler.AddCommand("quit", 1, &quitCommand);
 
     while(true)
     {
@@ -174,7 +182,7 @@ int main(int argc, char* argv[])
 
     IRCClient client;
 
-    client.Debug(true);
+    client.Debug(false);
 
     // Start the input thread
     Thread thread;
