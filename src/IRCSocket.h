@@ -18,6 +18,7 @@
 #ifndef _IRCSOCKET_H
 #define _IRCSOCKET_H
 
+#include <unistd.h>
 #include <iostream>
 #include <sstream>
 
